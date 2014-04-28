@@ -1,6 +1,6 @@
 {
-    "input": "form.pdf",
-    "output": "blah.pdf",
+    "input": "/Users/alex/dev/cc/strike2/form.pdf",
+    "output": "/Users/alex/dev/cc/strike2/blah.pdf",
     "strikes": [
         { "page": 2, "x": 267, "y": 557, "x1": 40, "y1": 0, "thickness": 2 },
         { "page": 2, "x": 309, "y": 557, "x1": 37, "y1": 0, "thickness": 2 }
