@@ -4,7 +4,8 @@
             [compojure.route :as route]
             [ring.middleware.json :as middleware]
             [ring.util.response :refer [response]]
-            [clojure.walk :refer [keywordize-keys]])
+            [clojure.walk :refer [keywordize-keys]]
+            [clojure.tools.logging :refer [info]])
   (:import (com.itextpdf.text.pdf AcroFields PdfReader PdfStamper)
            (java.util Set)
            (java.io FileOutputStream)))
@@ -12,7 +13,7 @@
 (defn my-loop [data]
   (let [strikes (:strikes (keywordize-keys data))]
   (doseq [strike strikes]
-    (println "my-loop, single strike: " strike))))
+    (info "my-loop, single strike: " strike))))
 
 (defn make-reader [pdf-file]
   "get PDF file reader"
@@ -47,6 +48,7 @@
         writer (make-writer reader pdf-written)
         strikes (:strikes parsed-data)]
     (doseq [strike strikes]
+      (info "working on strike:" strike)
       (draw-line :content (get-page writer (:page strike))
                  :x (:x strike)
                  :y (:y strike)
@@ -60,7 +62,9 @@
 (defroutes app-routes
   (GET "/" [] "Hello World")
   (POST "/" request
-        (strike-out (:json-params request)))
+        (do
+          (info "received" request)
+          (strike-out (:json-params request))))
   (route/resources "/")
   (route/not-found "Not Found"))
 

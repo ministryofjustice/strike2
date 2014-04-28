@@ -22,7 +22,7 @@ Run:
 
 then start it with:
 
-    java -jar target/strike2-0.1.0-standalone.jar
+    java -jar target/strike2-0.2.0-standalone.jar
 
 Also look at [scripts/strike2.conf](scripts/strike2.conf) for
 supervisord startup script.
