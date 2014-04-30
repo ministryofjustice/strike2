@@ -5,7 +5,8 @@
             [ring.middleware.json :as middleware]
             [ring.util.response :refer [response]]
             [clojure.walk :refer [keywordize-keys]]
-            [clojure.tools.logging :refer [info]])
+            [clojure.string :as str]
+            [taoensso.timbre :as timbre :refer (log debug info warn error fatal report)])
   (:import (com.itextpdf.text.pdf AcroFields PdfReader PdfStamper)
            (java.util Set)
            (java.io FileOutputStream)))
@@ -38,6 +39,10 @@
   "return filled in PDF as URN"
   (response {:URN file}))
 
+(defn create-message [sign message]
+  (let [repeated-sign (str/join "" (repeat 35 sign))]
+    (format "%s %s %s" repeated-sign message repeated-sign)))
+
 (defn strike-out [data]
   "take options which will contain INPUT & OUTPUT files as well as
   x,y,x1,y1 coordiantes along with the line thickness that should be
@@ -47,6 +52,8 @@
         pdf-written (:output parsed-data)
         writer (make-writer reader pdf-written)
         strikes (:strikes parsed-data)]
+    (info (create-message ">" "request start"))
+    (info "the content of the strike is" data)
     (doseq [strike strikes]
       (info "working on strike:" strike)
       (draw-line :content (get-page writer (:page strike))
@@ -56,15 +63,13 @@
                  :y1 (:y1 strike)
                  :thickness (:thickness strike)))
     (.close writer)
+    (info (create-message "<" "request end"))
     (produce-uri-from pdf-written)))
-
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
   (POST "/" request
-        (do
-          (info "received" request)
-          (strike-out (:json-params request))))
+        (strike-out (:json-params request)))
   (route/resources "/")
   (route/not-found "Not Found"))
 
