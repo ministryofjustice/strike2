@@ -1,4 +1,4 @@
-(defproject strike2 "0.2.1"
+(defproject strike2 "0.3.0"
   :description "App for doing strikes on PDFs"
   :url "http://example.com/FIXME"
   :dependencies [[org.clojure/clojure "1.5.1"]
