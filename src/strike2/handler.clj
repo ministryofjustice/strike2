@@ -6,15 +6,11 @@
             [ring.util.response :refer [response]]
             [clojure.walk :refer [keywordize-keys]]
             [clojure.string :as str]
-            [taoensso.timbre :as timbre :refer (log debug info warn error fatal report)])
+            [taoensso.timbre :as timbre :refer (log debug info warn error fatal report)]
+            [strike2.health :as health])
   (:import (com.itextpdf.text.pdf AcroFields PdfReader PdfStamper)
            (java.util Set)
            (java.io FileOutputStream)))
-
-(defn my-loop [data]
-  (let [strikes (:strikes (keywordize-keys data))]
-  (doseq [strike strikes]
-    (info "my-loop, single strike: " strike))))
 
 (defn make-reader [pdf-file]
   "get PDF file reader"
@@ -35,18 +31,16 @@
   (.lineTo content (+ x x1) (+ y y1))
   (.stroke content))
 
-(defn produce-uri-from [file]
-  "return filled in PDF as URN"
-  (response {:URN file}))
-
 (defn create-message [sign message]
   (let [repeated-sign (str/join "" (repeat 35 sign))]
     (format "%s %s %s" repeated-sign message repeated-sign)))
 
 (defn strike-out [data]
-  "take options which will contain INPUT & OUTPUT files as well as
+  "Take options which will contain INPUT & OUTPUT files as well as
   x,y,x1,y1 coordiantes along with the line thickness that should be
-  drawn/struck-out in a INPUT PDF file"
+  drawn/struck-out in a INPUT PDF file.
+
+  Return the name of the PDF file once the strikes are complete."
   (let [parsed-data (keywordize-keys data)
         reader (make-reader (:input parsed-data))
         pdf-written (:output parsed-data)
@@ -64,10 +58,17 @@
                  :thickness (:thickness strike)))
     (.close writer)
     (info (create-message "<" "request end"))
-    (produce-uri-from pdf-written)))
+    {:body {:URN pdf-written}}))
+
+(defn jvm-memory-usage []
+  "return JVM memory usage"
+  (let [memory-stats (health/memory-usage)]
+    (info "memory usage request, output:" memory-stats)
+    {:body memory-stats}))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
+  (GET "/health" [] (jvm-memory-usage))
   (POST "/" request
         (strike-out (:json-params request)))
   (route/resources "/")
