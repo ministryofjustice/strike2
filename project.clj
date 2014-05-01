@@ -9,7 +9,9 @@
                  [com.taoensso/timbre "3.1.6"]]
   :plugins [[lein-ring "0.8.10"]]
   :ring {:handler strike2.handler/app
-         :port 4000}
+         :init    strike2.handler/init
+         :destroy strike2.handler/destroy
+         :port    4000}
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring-mock "0.1.5"]]}})
