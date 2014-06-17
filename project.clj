@@ -1,12 +1,12 @@
-(defproject strike2 "0.3.1"
+(defproject strike2 "0.4.0"
   :description "App for doing strikes on PDFs"
-  :url "http://example.com/FIXME"
-  :dependencies [[org.clojure/clojure "1.5.1"]
+  :url "https://github.com/ministryofjustice/strike2"
+  :dependencies [[org.clojure/clojure "1.6.0"]
                  [ring/ring-json "0.3.1"]
-                 [ring/ring-core "1.2.2"]
-                 [compojure "1.1.6"]
-                 [com.itextpdf/itextpdf "5.4.4"]
-                 [com.taoensso/timbre "3.1.6"]]
+                 [ring/ring-core "1.3.0"]
+                 [compojure "1.1.8"]
+                 [com.itextpdf/itextpdf "5.5.1"]
+                 [com.taoensso/timbre "3.2.1"]]
   :plugins [[lein-ring "0.8.10"]]
   :ring {:handler strike2.handler/app
          :init    strike2.handler/init
