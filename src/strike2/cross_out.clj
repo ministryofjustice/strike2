@@ -4,7 +4,7 @@
             [taoensso.timbre :as timbre :refer (log debug info warn error fatal report)])
   (:import (com.itextpdf.text.pdf AcroFields PdfReader PdfStamper)
            (java.util Set)
-           (java.io FileOutputStream)))
+           (java.io FileOutputStream File)))
 
 (defn make-reader [pdf-file]
   "get PDF file reader"
@@ -69,6 +69,17 @@
    :headers {"Content-Type" "application/json; charset=utf-8"}
    :body (str "error processing payload: " data)})
 
+(defn save-pdf
+  "save PDF for debugging purposes"
+  [pdf-file]
+  (let [directory (str "/var/tmp/strike2-debug-" (System/currentTimeMillis))
+        file (str directory "/" "file.pdf")]
+  (.mkdir (File. directory))
+  (clojure.java.io/copy
+   (clojure.java.io/file pdf-file)
+   (clojure.java.io/file file))
+  (info "saved file" pdf-file "as" file "for debugging")))
+
 (defn strike-out
   "Data should look like:
 
@@ -104,7 +115,9 @@
         (info "Done with strikes, moving onto flattening...")
         (if (true? (flatten-pdf pdf-content parsed-data))
           (two-oh-oh new-pdf-file)
-          (five-oh-oh parsed-data)))
+          (do
+            (five-oh-oh parsed-data)
+            (save-pdf pdf-file))))
       (catch Exception e
         (do
           (info (str "Exception caught " e))
