@@ -25,15 +25,39 @@
   (.lineTo content (+ x x1) (+ y y1))
   (.stroke content))
 
+(defn do-strikes
+  "draw strikes on the PDF"
+  [strikes writer]
+  (doseq [strike strikes]
+    (info "working on strike:" strike)
+    (draw-line :content (get-page writer (:page strike))
+               :x (:x strike)
+               :y (:y strike)
+               :x1 (:x1 strike)
+               :y1 (:y1 strike)
+               :thickness (:thickness strike))))
+
 (defn create-message [sign message]
   "Create the message surrounded by the sign."
   (let [repeated-sign (str/join "" (repeat 35 sign))]
     (format "%s %s %s" repeated-sign message repeated-sign)))
 
 (defn flatten-pdf
-  "Flatten PDF document"
-  [pdf]
-  (.setFormFlattening pdf true))
+  "Parse options and flatten PDF document if required"
+  [pdf options]
+  (if (true? (:flatten options))
+    (try
+      (.setFormFlattening pdf true)
+      true
+      (catch Exception e false))
+    true))
+
+(defn five-hundred-error
+  "return 500 error along with the data"
+  [data]
+  {:status 500
+   :headers {"Content-Type" "application/json; charset=utf-8"}
+   :body (str "error processing payload: " data)})
 
 (defn strike-out
   "Data should look like:
@@ -59,22 +83,14 @@
   complete."
   [data]
   (let [parsed-data (keywordize-keys data)
-        reader (make-reader (:input parsed-data))
-        pdf-written (:output parsed-data)
-        writer (make-writer reader pdf-written)
+        pdf-file (make-reader (:input parsed-data))
+        new-pdf-file (:output parsed-data)
         strikes (:strikes parsed-data)]
     (info (create-message ">" "request start"))
     (info "the content of the strike is" data)
-    (doseq [strike strikes]
-      (info "working on strike:" strike)
-      (draw-line :content (get-page writer (:page strike))
-                 :x (:x strike)
-                 :y (:y strike)
-                 :x1 (:x1 strike)
-                 :y1 (:y1 strike)
-                 :thickness (:thickness strike)))
-    (if (true? (:flatten parsed-data))
-      (flatten-pdf writer))
-    (.close writer)
+    (with-open [pdf-content (make-writer pdf-file new-pdf-file)]
+      (do-strikes strikes pdf-content)
+      (if (false? (flatten-pdf pdf-content parsed-data))
+        (five-hundred-error parsed-data)))
     (info (create-message "<" "request end"))
-    pdf-written))
+    new-pdf-file))
