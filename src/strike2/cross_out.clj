@@ -49,10 +49,20 @@
     (try
       (.setFormFlattening pdf true)
       true
-      (catch Exception e false))
+      (catch Exception e
+        (do
+          (info (str "Exception in flatten-pdf: " e))
+          false)))
     true))
 
-(defn five-hundred-error
+(defn two-oh-oh
+  "return 200 along with the file name"
+  [file]
+  {:status 200
+   :headers {"Content-Type" "application/json; charset=utf-8"}
+   :body {:URN file}})
+
+(defn five-oh-oh
   "return 500 error along with the data"
   [data]
   {:status 500
@@ -79,8 +89,8 @@
   This function will then use input.pdf as a template to create
   output.pdf. It will draw line(s) based on strikes array.
 
-  It then returns the name of the PDF file once the strikes are
-  complete."
+  It then returns 200 HTTP status code if successful.
+  Or 500 HTTP status code if a failure."
   [data]
   (let [parsed-data (keywordize-keys data)
         pdf-file (make-reader (:input parsed-data))
@@ -88,9 +98,15 @@
         strikes (:strikes parsed-data)]
     (info (create-message ">" "request start"))
     (info "the content of the strike is" data)
-    (with-open [pdf-content (make-writer pdf-file new-pdf-file)]
-      (do-strikes strikes pdf-content)
-      (if (false? (flatten-pdf pdf-content parsed-data))
-        (five-hundred-error parsed-data)))
-    (info (create-message "<" "request end"))
-    new-pdf-file))
+    (try
+      (with-open [pdf-content (make-writer pdf-file new-pdf-file)]
+        (do-strikes strikes pdf-content)
+        (info "Done with strikes, moving onto flattening...")
+        (if (true? (flatten-pdf pdf-content parsed-data))
+          (two-oh-oh new-pdf-file)
+          (five-oh-oh parsed-data)))
+      (catch Exception e
+        (do
+          (info (str "Exception caught " e))
+          (five-oh-oh parsed-data)))
+      (finally (info (create-message "<" "request end"))))))

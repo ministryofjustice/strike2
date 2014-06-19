@@ -32,7 +32,7 @@
   (GET "/" [] "The app is up")
   (GET "/health" [] (jvm-memory-usage))
   (POST "/" request
-        {:body {:URN (cross-out/strike-out (:json-params request))}})
+        (cross-out/strike-out (:json-params request)))
   (route/resources "/")
   (route/not-found "Not Found"))
 
