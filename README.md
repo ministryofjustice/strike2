@@ -1,6 +1,8 @@
-# strike 2
+# `strike 2`
 
 App for crossing sections in PDF documents
+
+[![Build Status](https://travis-ci.org/ministryofjustice/strike2.svg)](https://travis-ci.org/ministryofjustice/strike2)
 
 ## Prerequisites
 
@@ -22,7 +24,7 @@ Run:
 
 then start it with:
 
-    java -jar target/strike2-0.3.0-standalone.jar
+    java -jar target/strike2-X.Y.Z-standalone.jar
 
 Also look at [scripts/strike2.conf](scripts/strike2.conf) for
 supervisord startup script.
