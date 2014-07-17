@@ -1,4 +1,4 @@
-(defproject strike2 "0.5.0"
+(defproject strike2 "0.5.1"
   :description "App for doing strikes on PDFs"
   :url "https://github.com/ministryofjustice/strike2"
   :dependencies [[org.clojure/clojure "1.6.0"]
@@ -11,6 +11,7 @@
   :ring {:handler strike2.handler/app
          :init    strike2.handler/init
          :destroy strike2.handler/destroy
+         :host    "localhost"
          :port    4000}
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]

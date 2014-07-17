@@ -1,11 +1,13 @@
 (ns strike2.test.cross-out
+  (:require [clojure.java.io :as io])
   (:use clojure.test
         strike2.cross-out))
 
-(deftest stiking-functionality
+(deftest striking-functionality
   (testing "strike-out"
-    (let [data {:input "/Users/alex/dev/cc/strike2/form.pdf" ;; TODO: fix this sometime
-                :output "/tmp/blah.pdf"
+    (let [pdf-output "/tmp/blah.pdf"
+          data {:input (str (io/file (io/resource "pdf/form.pdf")))
+                :output pdf-output
                 :strikes [{:page 2, :x 267, :y 557, :x1 40, :y1 0, :thickness 2}
                           {:page 2, :x 309, :y 557, :x1 37, :y1 0, :thickness 2}]}]
-    (is (= (strike-out data) "/tmp/blah.pdf")))))
+    (is (= (:URN (:body (strike-out data))) pdf-output)))))
