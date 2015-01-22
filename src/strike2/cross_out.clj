@@ -126,4 +126,7 @@
         (do
           (info (str "Exception caught " e))
           (five-oh-oh parsed-data)))
-      (finally (info (create-message "<" "request end"))))))
+      (finally
+        (do
+          (close-reader pdf-file)
+          (info (create-message "<" "request end")))))))
