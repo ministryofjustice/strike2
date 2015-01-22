@@ -10,6 +10,10 @@
   "get PDF file reader"
   (PdfReader. pdf-file))
 
+(defn close-reader [reader]
+  "close PDF file reader"
+  (.close reader))
+
 (defn make-writer [reader file-name]
   "create PDF file writer"
   (PdfStamper. reader (FileOutputStream. file-name)))
