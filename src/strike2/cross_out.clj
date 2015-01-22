@@ -10,6 +10,10 @@
   "get PDF file reader"
   (PdfReader. pdf-file))
 
+(defn close-reader [reader]
+  "close PDF file reader"
+  (.close reader))
+
 (defn make-writer [reader file-name]
   "create PDF file writer"
   (PdfStamper. reader (FileOutputStream. file-name)))
@@ -114,7 +118,9 @@
         (do-strikes strikes pdf-content)
         (info "Done with strikes, moving onto flattening...")
         (if (true? (flatten-pdf pdf-content parsed-data))
-          (two-oh-oh new-pdf-file)
+          (do
+            (info ".......... flattening" new-pdf-file)
+            (two-oh-oh new-pdf-file))
           (do
             (five-oh-oh parsed-data)
             (save-pdf pdf-file))))
@@ -122,4 +128,7 @@
         (do
           (info (str "Exception caught " e))
           (five-oh-oh parsed-data)))
-      (finally (info (create-message "<" "request end"))))))
+      (finally
+        (do
+          (close-reader pdf-file)
+          (info (create-message "<" "request end")))))))
