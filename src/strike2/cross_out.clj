@@ -118,7 +118,9 @@
         (do-strikes strikes pdf-content)
         (info "Done with strikes, moving onto flattening...")
         (if (true? (flatten-pdf pdf-content parsed-data))
-          (two-oh-oh new-pdf-file)
+          (do
+            (info ".......... flattening" new-pdf-file)
+            (two-oh-oh new-pdf-file))
           (do
             (five-oh-oh parsed-data)
             (save-pdf pdf-file))))
