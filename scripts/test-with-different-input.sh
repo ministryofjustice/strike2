@@ -2,10 +2,12 @@
 
 # for testing multiple PDFs sent accross to the service
 
+echo "run this script from the repo's root directory" >&2
+
 # copy pdf file to file
 file="/tmp/striky-$(date +%s)${RANDOM}"
 
-cp ../form.pdf ${file}.pdf
+cp form.pdf ${file}.pdf
 
 # write the below JSON to a file
 cat <<EOF > ${file}.json
@@ -24,4 +26,4 @@ EOF
 curl -H "Accept: application/json" \
     -X POST \
     -H "Content-Type: application/json" \
-    -d @scripts/${file}.json http://127.0.0.1:4000/
+    -d @${file}.json http://127.0.0.1:4000/
