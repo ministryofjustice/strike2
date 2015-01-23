@@ -73,17 +73,6 @@
    :headers {"Content-Type" "application/json; charset=utf-8"}
    :body (str "error processing payload: " data)})
 
-(defn save-pdf
-  "save PDF for debugging purposes"
-  [pdf-file]
-  (let [directory (str "/var/tmp/strike2-debug-" (System/currentTimeMillis))
-        file (str directory "/" "file.pdf")]
-  (.mkdir (File. directory))
-  (clojure.java.io/copy
-   (clojure.java.io/file pdf-file)
-   (clojure.java.io/file file))
-  (info "saved file" pdf-file "as" file "for debugging")))
-
 (defn strike-out
   "Data should look like:
 
@@ -122,8 +111,8 @@
             (info ".......... flattening" new-pdf-file)
             (two-oh-oh new-pdf-file))
           (do
-            (five-oh-oh parsed-data)
-            (save-pdf pdf-file))))
+            (info "No flattening instructions given, bombing out!")
+            (five-oh-oh parsed-data))))
       (catch Exception e
         (do
           (info (str "Exception caught " e))
