@@ -110,7 +110,9 @@
           (do
             (info ".......... flattening" new-pdf-file)
             (two-oh-oh new-pdf-file))
-          (five-oh-oh parsed-data)))
+          (do
+            (info "No flattening instructions given, bombing out!")
+            (five-oh-oh parsed-data))))
       (catch Exception e
         (do
           (info (str "Exception caught " e))
