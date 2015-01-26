@@ -1,4 +1,4 @@
-(defproject strike2 "0.6.0"
+(defproject strike2 "0.6.2"
   :description "App for doing strikes on PDFs"
   :url "https://github.com/ministryofjustice/strike2"
   :dependencies [[org.clojure/clojure "1.6.0"]
